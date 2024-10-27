@@ -1,1 +1,1 @@
-we used supabse to provide the psotgres server
+we used supabse to provide the postgres server
