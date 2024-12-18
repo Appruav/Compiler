@@ -1,28 +1,43 @@
 #!/bin/bash
 
-# Simple version of run.sh
+# Get arguments
 LANGUAGE=$1    # First argument: language (cpp or java)
 CODE_FILE=$2   # Second argument: path to the code file
 INPUT_FILE=$3  # Third argument: path to the input file
 
+# Function to handle errors
+handle_error() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
 case "$LANGUAGE" in
     "cpp")
         # Compile and run C++ code
-        g++ -o program "$CODE_FILE"
+        g++ -o /app/program "$CODE_FILE" || handle_error "Compilation failed"
         if [ -f "$INPUT_FILE" ]; then
-            ./program < "$INPUT_FILE"
+            /app/program < "$INPUT_FILE"
         else
-            ./program
+            /app/program
         fi
         ;;
     "java")
-        # Compile and run Java code
-        javac "$CODE_FILE"
-        class_name=$(basename "$CODE_FILE" .java)
+        # Get the directory containing the source file
+        DIR=$(dirname "$CODE_FILE")
+        CLASS_NAME=$(basename "$CODE_FILE" .java)
+        
+        # Compile Java code
+        cd "$DIR" || handle_error "Failed to change to source directory"
+        javac "$CLASS_NAME.java" || handle_error "Compilation failed"
+        
+        # Run Java code
         if [ -f "$INPUT_FILE" ]; then
-            java "$class_name" < "$INPUT_FILE"
+            java "$CLASS_NAME" < "$INPUT_FILE"
         else
-            java "$class_name"
+            java "$CLASS_NAME"
         fi
+        ;;
+    *)
+        handle_error "Unsupported language: $LANGUAGE"
         ;;
 esac

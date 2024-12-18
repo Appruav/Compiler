@@ -5,10 +5,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-WORKDIR /app
+WORKDIR /app/code
 
-COPY run.sh .
-RUN chmod +x run.sh
+COPY run.sh /run.sh
+
+RUN chmod +x /run.sh
 
 # Set the entry point
 ENTRYPOINT ["/run.sh"]
